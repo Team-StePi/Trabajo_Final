@@ -1,76 +1,97 @@
+
 package renting.servicio;
 
 import renting.modelo.Cliente;
 import renting.modelo.ContratoRenting;
 import renting.modelo.Vehiculo;
-import renting.util.Validador;
+import renting.estructuras.NodoContrato;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Scanner;
 
 public class ContratoService {
 
-    private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private static final DateTimeFormatter FORMATO_FECHA =
+            DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     private Scanner sc = new Scanner(System.in);
-    private List<ContratoRenting> contratos;
+    private NodoContrato cabeza;
     private ClienteService clienteService;
     private VehiculoService vehiculoService;
 
-    public ContratoService(ClienteService clienteService, VehiculoService vehiculoService) {
-        this.contratos = new LinkedList<>();
+    public ContratoService(ClienteService clienteService,
+                           VehiculoService vehiculoService) {
+        this.cabeza = null;
         this.clienteService = clienteService;
         this.vehiculoService = vehiculoService;
     }
 
     public ContratoService() {
-        this.contratos = new LinkedList<>();
+        this.cabeza = null;
     }
 
     public String registrarContrato() {
+
         System.out.print("Ingrese el ID del contrato: ");
         String idContrato = sc.nextLine();
 
-        for (ContratoRenting c : contratos) {
+        // Verificar si el ID ya existe
+        NodoContrato actual = cabeza;
+
+        while (actual != null) {
+            ContratoRenting c = actual.getDato();
+
             if (c.getIdContrato().equalsIgnoreCase(idContrato)) {
-                return "Error: Ya existe un contrato registrado con el ID " + idContrato + ".";
+                return "Error: Ya existe un contrato registrado con el ID "
+                        + idContrato + ".";
             }
+
+            actual = actual.getSiguiente();
         }
 
         System.out.println("--- BÚSQUEDA Y ASIGNACIÓN DE CLIENTE ---");
-        Cliente cliente = clienteService.buscarCliente();
+        Cliente cliente = clienteService.buscarCliente(sc);
+
         if (cliente == null) {
             return "Error: El cliente ingresado no está registrado en el sistema.";
         }
 
         if (clienteTieneContratoActivo(cliente.getCedula())) {
-            return "Error: El cliente C.C. " + cliente.getCedula() + " ya posee un contrato ACTIVO.";
+            return "Error: El cliente C.C. " + cliente.getCedula()
+                    + " ya posee un contrato ACTIVO.";
         }
 
         System.out.println("--- BÚSQUEDA Y ASIGNACIÓN DE VEHÍCULO ---");
-        Vehiculo vehiculo = vehiculoService.buscarVehiculo();
+        Vehiculo vehiculo = vehiculoService.buscarVehiculo(sc);
+
         if (vehiculo == null) {
             return "Error: El vehículo ingresado no existe en el inventario.";
         }
 
         if (Vehiculo.EstadoVehiculo.ALQUILADO.equals(vehiculo.getEstado())) {
-            return "Error: El vehículo con placa " + vehiculo.getPlaca() + " ya se encuentra ALQUILADO.";
+            return "Error: El vehículo con placa " + vehiculo.getPlaca()
+                    + " ya se encuentra ALQUILADO.";
         }
 
-        LocalDate inicio = pedirFecha("Ingrese la fecha de inicio (DD-MM-AAAA): ");
-        LocalDate fin = pedirFecha("Ingrese la fecha de fin (DD-MM-AAAA): ");
+        LocalDate inicio = pedirFecha(
+                "Ingrese la fecha de inicio (DD-MM-AAAA): ");
+
+        LocalDate fin = pedirFecha(
+                "Ingrese la fecha de fin (DD-MM-AAAA): ");
 
         while (!fin.isAfter(inicio)) {
-            System.out.println("La fecha de fin debe ser posterior a la fecha de inicio.");
-            fin = pedirFecha("Ingrese la fecha de fin (DD-MM-AAAA): ");
+            System.out.println(
+                    "La fecha de fin debe ser posterior a la fecha de inicio.");
+
+            fin = pedirFecha(
+                    "Ingrese la fecha de fin (DD-MM-AAAA): ");
         }
 
         int totalDias = (int) ChronoUnit.DAYS.between(inicio, fin);
+
         ContratoRenting nuevoContrato = new ContratoRenting(
                 idContrato,
                 cliente.getCedula(),
@@ -81,30 +102,54 @@ public class ContratoService {
                 vehiculo.getPrecioDiario()
         );
 
-        contratos.add(nuevoContrato);
+        // Crear el nuevo nodo
+        NodoContrato nuevo = new NodoContrato(nuevoContrato);
+
+        // Agregar el nodo a la lista
+        if (cabeza == null) {
+            cabeza = nuevo;
+        } else {
+            actual = cabeza;
+
+            while (actual.getSiguiente() != null) {
+                actual = actual.getSiguiente();
+            }
+
+            actual.setSiguiente(nuevo);
+        }
+
         vehiculo.setEstado(Vehiculo.EstadoVehiculo.ALQUILADO);
-        return "Contrato " + idContrato + " registrado (" + totalDias + " días). Vehículo marcado como 'ALQUILADO'.";
+
+        return "Contrato " + idContrato + " registrado (" + totalDias
+                + " días). Vehículo marcado como 'ALQUILADO'.";
     }
 
     private LocalDate pedirFecha(String mensaje) {
+
         while (true) {
             System.out.print(mensaje);
             String fechaTexto = sc.nextLine().trim();
+
             if (fechaTexto.isEmpty()) {
-                System.out.println("Error: La fecha no puede estar vacía. Intente de nuevo.");
+                System.out.println(
+                        "Error: La fecha no puede estar vacía. Intente de nuevo.");
                 continue;
             }
 
             try {
                 return LocalDate.parse(fechaTexto, FORMATO_FECHA);
             } catch (DateTimeParseException e) {
-                System.out.println("Error: Formato o fecha inválida. Debe usar el formato DD-MM-AAAA (ejemplo: 25-10-2026).");
+                System.out.println(
+                        "Error: Formato o fecha inválida. Debe usar el formato "
+                        + "DD-MM-AAAA (ejemplo: 25-10-2026).");
             }
         }
     }
 
     public String modificarContrato() {
+
         ContratoRenting contrato = buscarContrato();
+
         if (contrato == null) {
             return "Error: No se encontró el contrato solicitado.";
         }
@@ -113,25 +158,39 @@ public class ContratoService {
             return "Error: No se puede modificar un contrato que ya fue FINALIZADO.";
         }
 
-        LocalDate nuevaInicio = pedirFecha("Ingrese la nueva fecha de inicio (DD-MM-AAAA): ");
-        LocalDate nuevaFin = pedirFecha("Ingrese la nueva fecha de fin (DD-MM-AAAA): ");
+        LocalDate nuevaInicio = pedirFecha(
+                "Ingrese la nueva fecha de inicio (DD-MM-AAAA): ");
+
+        LocalDate nuevaFin = pedirFecha(
+                "Ingrese la nueva fecha de fin (DD-MM-AAAA): ");
+
         while (!nuevaFin.isAfter(nuevaInicio)) {
-            System.out.println("La fecha de fin debe ser posterior a la fecha de inicio.");
-            nuevaFin = pedirFecha("Ingrese la fecha de fin (DD-MM-AAAA): ");
+            System.out.println(
+                    "La fecha de fin debe ser posterior a la fecha de inicio.");
+
+            nuevaFin = pedirFecha(
+                    "Ingrese la nueva fecha de fin (DD-MM-AAAA): ");
         }
 
-        int nuevosDias = (int) ChronoUnit.DAYS.between(nuevaInicio, nuevaFin);
-        float precioDiario = contrato.getValorTotal() / contrato.getTotalDias();
+        int nuevosDias =
+                (int) ChronoUnit.DAYS.between(nuevaInicio, nuevaFin);
+
+        float precioDiario =
+                contrato.getValorTotal() / contrato.getTotalDias();
 
         contrato.setFechaInicio(nuevaInicio.format(FORMATO_FECHA));
         contrato.setFechaFin(nuevaFin.format(FORMATO_FECHA));
         contrato.setTotalDias(nuevosDias);
         contrato.calcularValorTotal(precioDiario);
 
-        return "Contrato " + contrato.getIdContrato() + " modificado (" + nuevosDias + " días). Nuevo valor total: $" + contrato.getValorTotal();
+        return "Contrato " + contrato.getIdContrato()
+                + " modificado (" + nuevosDias
+                + " días). Nuevo valor total: $"
+                + contrato.getValorTotal();
     }
 
     public String devolverContrato() {
+
         ContratoRenting contrato = buscarContrato();
 
         if (contrato == null) {
@@ -144,51 +203,90 @@ public class ContratoService {
 
         contrato.setEstado("Finalizado");
 
-        if (vehiculoService != null && vehiculoService.getVehiculos() != null) {
+        if (vehiculoService != null
+                && vehiculoService.getVehiculos() != null) {
+
             for (Vehiculo v : vehiculoService.getVehiculos()) {
-                if (v.getPlaca().equalsIgnoreCase(contrato.getPlacaVehiculo())) {
+                if (v.getPlaca().equalsIgnoreCase(
+                        contrato.getPlacaVehiculo())) {
+
                     v.setEstado(Vehiculo.EstadoVehiculo.DISPONIBLE);
                     break;
                 }
             }
         }
 
-        return "Devolución procesada. Contrato " + contrato.getIdContrato() + " finalizado y vehículo " + contrato.getPlacaVehiculo() + " disponible.";
+        return "Devolución procesada. Contrato "
+                + contrato.getIdContrato()
+                + " finalizado y vehículo "
+                + contrato.getPlacaVehiculo()
+                + " disponible.";
     }
 
-    // Nombre de método exacto del UML: buscarContrato(): ContratoRenting
+    // Buscar contrato por su ID
     public ContratoRenting buscarContrato() {
+
         System.out.print("Ingrese el ID del contrato: ");
         String idContrato = sc.nextLine();
-        for (ContratoRenting c : contratos) {
+
+        NodoContrato actual = cabeza;
+
+        while (actual != null) {
+
+            ContratoRenting c = actual.getDato();
+
             if (c.getIdContrato().equalsIgnoreCase(idContrato)) {
                 return c;
             }
+
+            actual = actual.getSiguiente();
         }
+
         return null;
     }
 
     public boolean validarDisponibilidad() {
+
         System.out.print("Ingrese la placa del vehículo: ");
         String placa = sc.nextLine();
-        for (ContratoRenting c : contratos) {
-            if (c.getPlacaVehiculo().equalsIgnoreCase(placa) && "Activo".equalsIgnoreCase(c.getEstado())) {
+
+        NodoContrato actual = cabeza;
+
+        while (actual != null) {
+
+            ContratoRenting c = actual.getDato();
+
+            if (c.getPlacaVehiculo().equalsIgnoreCase(placa)
+                    && "Activo".equalsIgnoreCase(c.getEstado())) {
                 return false;
             }
+
+            actual = actual.getSiguiente();
         }
+
         return true;
     }
 
     private boolean clienteTieneContratoActivo(String cedulaCliente) {
-        for (ContratoRenting c : contratos) {
-            if (c.getCedulaCliente().equalsIgnoreCase(cedulaCliente) && "Activo".equalsIgnoreCase(c.getEstado())) {
+
+        NodoContrato actual = cabeza;
+
+        while (actual != null) {
+
+            ContratoRenting c = actual.getDato();
+
+            if (c.getCedulaCliente().equalsIgnoreCase(cedulaCliente)
+                    && "Activo".equalsIgnoreCase(c.getEstado())) {
                 return true;
             }
+
+            actual = actual.getSiguiente();
         }
+
         return false;
     }
 
-    public List<ContratoRenting> getContratos() {
-        return contratos;
+    public NodoContrato getContratos() {
+        return cabeza;
     }
 }
