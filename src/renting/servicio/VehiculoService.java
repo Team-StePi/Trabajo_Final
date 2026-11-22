@@ -191,6 +191,10 @@ public class VehiculoService {
         return "Vehículo con la placa " + placa + " no encontrado.";
     }
 
+    public NodoVehiculo getVehiculos() {
+        return cabeza;
+    }
+
     // Mostrar todos los vehículos
     public String mostrarVehiculos() {
 
