@@ -18,7 +18,7 @@ public class MenuPrincipal {
         this.clienteService = new ClienteService();
         this.vehiculoService = new VehiculoService();
         this.contratoService = new ContratoService(clienteService, vehiculoService);
-        this.informeService = new InformeService();
+        this.informeService = new InformeService(clienteService, vehiculoService, contratoService);
     }
 
     public String mostrarMenu() {

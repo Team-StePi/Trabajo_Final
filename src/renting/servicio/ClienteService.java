@@ -118,6 +118,10 @@ public class ClienteService {
         return "Cliente con la cédula " + cedula + " no encontrado.";
     }
 
+    public NodoClientes getClientes() {
+        return cabeza;
+    }
+
     // Mostrar todos los clientes
     public String mostrarClientes() {
 
