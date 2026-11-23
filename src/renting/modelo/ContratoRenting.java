@@ -26,25 +26,13 @@ public class ContratoRenting {
         return idContrato;
     }
 
-    /*public void setIdContrato(String idContrato) {
-        this.idContrato = idContrato;
-    }*/
-
     public String getCedulaCliente() {
         return cedulaCliente;
     }
 
-    /*public void setCedulaCliente(String cedulaCliente) {
-        this.cedulaCliente = cedulaCliente;
-    }*/
-
     public String getPlacaVehiculo() {
         return placaVehiculo;
     }
-
-    /*public void setPlacaVehiculo(String placaVehiculo) {
-        this.placaVehiculo = placaVehiculo;
-    }*/
 
     public String getFechaInicio() {
         return fechaInicio;
