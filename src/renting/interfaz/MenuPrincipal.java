@@ -1,5 +1,8 @@
 package renting.interfaz;
 
+import renting.modelo.Cliente;
+import renting.modelo.Vehiculo;
+import renting.modelo.ContratoRenting;
 import renting.servicio.ClienteService;
 import renting.servicio.VehiculoService;
 import renting.servicio.ContratoService;
@@ -86,7 +89,8 @@ public class MenuPrincipal {
                     System.out.println(clienteService.eliminarCliente(sc, validador));
                     break;
                 case 4:
-                    System.out.println(clienteService.buscarCliente(sc, validador));
+                    Cliente c = (clienteService.buscarCliente(sc, validador));
+                    informeService.imprimir(c);
                     break;
                 case 5:
                     volver = true;
@@ -115,13 +119,14 @@ public class MenuPrincipal {
                     System.out.println(vehiculoService.registrarVehiculo(sc, validador));
                     break;
                 case 2:
-                    System.out.println(vehiculoService.modificarVehiculo(sc));
+                    System.out.println(vehiculoService.modificarVehiculo(sc, validador));
                     break;
                 case 3:
                     System.out.println(vehiculoService.eliminarVehiculo(sc, validador));
                     break;
                 case 4:
-                    System.out.println(vehiculoService.buscarVehiculo(sc, validador));
+                    Vehiculo v = vehiculoService.buscarVehiculo(sc, validador);
+                    informeService.imprimir(v);
                     break;
                 case 5:
                     volver = true;
@@ -147,16 +152,17 @@ public class MenuPrincipal {
 
             switch (opcion) {
                 case 1:
-                    System.out.println(contratoService.registrarContrato());
+                    System.out.println(contratoService.registrarContrato(sc));
                     break;
                 case 2:
-                    System.out.println(contratoService.modificarContrato());
+                    System.out.println(contratoService.modificarContrato(sc));
                     break;
                 case 3:
-                    System.out.println(contratoService.devolverContrato());
+                    System.out.println(contratoService.devolverContrato(sc));
                     break;
                 case 4:
-                    System.out.println(contratoService.buscarContrato());
+                    ContratoRenting c = contratoService.buscarContrato(sc);
+                    informeService.imprimir(c);
                     break;
                 case 5:
                     volver = true;

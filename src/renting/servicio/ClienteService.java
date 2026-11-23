@@ -29,8 +29,20 @@ public class ClienteService {
     // Registrar un cliente
     public String registrarCliente(Scanner sc, Validador v) {
 
+        boolean continuar = false;
+
+        String cedula = "";
         System.out.print("Ingrese la cédula: ");
-        String cedula = v.validarTexto(sc, 3);
+        while (!continuar) {
+            cedula = v.validarTexto(sc, 3);
+            Cliente clienteExistente = buscarCliente(cedula);
+            if (clienteExistente != null) {
+                System.out.println("Error: Ya existe un cliente registrado con la cédula " + cedula + ".");
+                System.out.print("Ingrese otra cédula: ");
+            } else {
+                continuar = true;
+            }
+        }
 
         System.out.print("Ingrese el nombre: ");
         String nombre = v.validarTexto(sc, 2);
@@ -71,30 +83,7 @@ public class ClienteService {
     }
 
     // Retornar cliente por su cédula
-    public String buscarCliente(Scanner sc, Validador v) {
-
-        System.out.print("Ingrese la cédula del cliente a buscar: ");
-        String cedula = v.validarTexto(sc, 3);
-
-        NodoClientes actual = cabeza;
-
-        while (actual != null) {
-
-            Cliente c = actual.getDato();
-
-            if (c.getCedula().equalsIgnoreCase(cedula)) {
-                return "Cliente encontrado: " + c.getNombre() + " " + c.getApellido();
-            }
-
-            actual = actual.getSiguiente();
-        }
-
-        System.out.println("Cliente con la cédula " + cedula + " no encontrado.");
-        return "Cliente no encontrado.";
-    }
-
-    // Retornar cliente por su cédula
-    public Cliente retornarCliente(Scanner sc, Validador v) {
+    public Cliente buscarCliente(Scanner sc, Validador v) {
 
         System.out.print("Ingrese la cédula del cliente a buscar: ");
         String cedula = v.validarTexto(sc, 3);
@@ -116,11 +105,31 @@ public class ClienteService {
         return null;
     }
 
+    public Cliente buscarCliente(String cedula) {
+
+        NodoClientes actual = cabeza;
+
+        while (actual != null) {
+
+            Cliente c = actual.getDato();
+
+            if (c.getCedula().equalsIgnoreCase(cedula)) {
+                return c;
+            }
+
+            actual = actual.getSiguiente();
+        }
+
+        System.out.println("Cliente con la cédula " + cedula + " no encontrado.");
+        return null;
+    }
+
     // Modificar un cliente por su cédula
     public String modificarCliente(Scanner sc) {
+        Validador v = new Validador();
 
         System.out.print("Ingrese la cédula del cliente a modificar: ");
-        String cedula = sc.nextLine();
+        String cedula = v.validarTexto(sc, 3);
 
         NodoClientes actual = cabeza;
 
@@ -135,19 +144,19 @@ public class ClienteService {
                 System.out.println("Ingrese los nuevos datos:");
 
                 System.out.print("Nuevo nombre: ");
-                c.setNombre(sc.nextLine());
+                c.setNombre(validador.validarTexto(sc, 2));
 
                 System.out.print("Nuevo apellido: ");
-                c.setApellido(sc.nextLine());
+                c.setApellido(validador.validarTexto(sc, 2));
 
                 System.out.print("Nuevo teléfono: ");
-                c.setTelefono(sc.nextLine());
+                c.setTelefono(validador.validarTexto(sc, 3));
 
                 System.out.print("Nueva dirección: ");
-                c.setDireccion(sc.nextLine());
+                c.setDireccion(validador.validarTexto(sc, 4));
 
                 System.out.print("Nueva licencia de conducción: ");
-                c.setLicenciaConduccion(sc.nextLine());
+                c.setLicenciaConduccion(validador.validarTexto(sc, 4));
 
                 return "Cliente modificado correctamente.";
             }
@@ -157,45 +166,6 @@ public class ClienteService {
 
         return "Cliente con la cédula " + cedula + " no encontrado.";
     }
-
-    // Eliminar cliente por su cédula
-    /*
-     * public String eliminarCliente(Scanner sc, Validador v) {
-     * 
-     * System.out.print("Ingrese la cédula del cliente a eliminar: ");
-     * String cedula = v.validarTexto(sc, 3);
-     * 
-     * if (cabeza == null) {
-     * return "No hay clientes registrados.";
-     * }
-     * 
-     * // Caso 1: el cliente está en el primer nodo
-     * if (cabeza.getDato().getCedula().equalsIgnoreCase(cedula)) {
-     * cabeza = cabeza.getSiguiente();
-     * return "Cliente eliminado correctamente.";
-     * }
-     * 
-     * // Caso 2: el cliente está en otro nodo
-     * NodoClientes actual = cabeza;
-     * 
-     * while (actual.getSiguiente() != null) {
-     * 
-     * Cliente c = actual.getSiguiente().getDato();
-     * 
-     * if (c.getCedula().equalsIgnoreCase(cedula)) {
-     * 
-     * // Saltar el nodo que se quiere eliminar
-     * actual.setSiguiente(actual.getSiguiente().getSiguiente());
-     * 
-     * return "Cliente eliminado correctamente.";
-     * }
-     * 
-     * actual = actual.getSiguiente();
-     * }
-     * 
-     * return "Cliente con la cédula " + cedula + " no encontrado.";
-     * }
-     */
 
     // Eliminar cliente por su cédula
     public String eliminarCliente(Scanner sc, Validador v) {
@@ -243,32 +213,5 @@ public class ClienteService {
 
     public NodoClientes getClientes() {
         return cabeza;
-    }
-
-    // Mostrar todos los clientes
-    public String mostrarClientes() {
-
-        if (cabeza == null) {
-            System.out.println("No hay clientes registrados.");
-            return "No hay clientes registrados.";
-        }
-
-        NodoClientes actual = cabeza;
-
-        while (actual != null) {
-
-            Cliente c = actual.getDato();
-
-            System.out.println("Cédula: " + c.getCedula());
-            System.out.println("Nombre: " + c.getNombre() + " " + c.getApellido());
-            System.out.println("Teléfono: " + c.getTelefono());
-            System.out.println("Dirección: " + c.getDireccion());
-            System.out.println("Licencia: " + c.getLicenciaConduccion());
-            System.out.println("-------------------------");
-
-            actual = actual.getSiguiente();
-        }
-
-        return "Clientes mostrados correctamente.";
     }
 }
