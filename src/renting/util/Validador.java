@@ -9,9 +9,10 @@ public class Validador {
          * 1. Solo letras y números (sin caracteres especiales)
          * 2. Solo letras (sin números ni caracteres especiales)
          * 3. Solo números (sin letras ni caracteres especiales)
+         * 4. Cualquier texto (sin restricciones)
          */
 
-        String texto = sc.nextLine();
+        String texto = sc.nextLine().trim();
         if (texto.equals("") ) {
             System.out.println("El dato no puede estar vacío, por favor intente de nuevo.");
             return validarTexto(sc, opcion);

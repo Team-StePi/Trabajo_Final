@@ -4,8 +4,8 @@ import renting.modelo.Vehiculo;
 
 public class NodoVehiculo {
 
-    Vehiculo Dato;
-    NodoVehiculo Siguiente;
+    private Vehiculo Dato;
+    private NodoVehiculo Siguiente;
 
     public NodoVehiculo(Vehiculo dato) {
         this.Dato = dato;
