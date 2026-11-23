@@ -19,9 +19,9 @@ public class CarroSedan extends Vehiculo{
     public CarroSedan() {
     }
 
-    public CarroSedan(String placa, String marca, int modelo, float precioDiario, Vehiculo.EstadoVehiculo estado,
+    public CarroSedan(String placa, String marca, int modelo, float precioDiario,
             CarroSedan.Combustible tipoCombustible, CarroSedan.TipoTransmision transmision) {
-        super(placa, marca, modelo, precioDiario, estado);
+        super(placa, marca, modelo, precioDiario);
         TipoCombustible = tipoCombustible;
         Transmision = transmision;
     }

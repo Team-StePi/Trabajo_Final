@@ -23,7 +23,6 @@ public class VehiculoService {
         System.out.println("1. Carro Sedán");
         System.out.println("2. Camioneta SUV");
         int tipo = validador.validarOpcionMenu(sc, 1, 2);
-        sc.nextLine();
 
         System.out.print("Ingrese la placa: ");
         String placa = validador.validarTexto(sc, 1);
@@ -33,13 +32,11 @@ public class VehiculoService {
 
         System.out.print("Ingrese el modelo (año): ");
         int modelo = validador.validarEntero(sc);
-        sc.nextLine();
 
         System.out.print("Ingrese el precio diario: ");
         float precio = validador.validarDecimal(sc);
-        sc.nextLine();
 
-        System.out.println("Seleccione el estado:");
+        /*System.out.println("Seleccione el estado:");
         System.out.println("1. DISPONIBLE");
         System.out.println("2. ALQUILADO");
         int opcionEstado = validador.validarOpcionMenu(sc, 1, 2);
@@ -49,7 +46,7 @@ public class VehiculoService {
             estado = EstadoVehiculo.DISPONIBLE;
         } else {
             estado = EstadoVehiculo.ALQUILADO;
-        }
+        } */
 
         Vehiculo v = null;
 
@@ -60,7 +57,6 @@ public class VehiculoService {
             System.out.println("2. DIESEL");
             System.out.println("3. ELECTRICO");
             int opCombustible = validador.validarOpcionMenu(sc, 1, 3);
-            sc.nextLine();
 
             CarroSedan.Combustible combustible;
             switch (opCombustible) {
@@ -79,7 +75,6 @@ public class VehiculoService {
             System.out.println("1. MANUAL");
             System.out.println("2. AUTOMATICA");
             int opTransmision = validador.validarOpcionMenu(sc, 1, 2);
-            sc.nextLine();
 
             CarroSedan.TipoTransmision transmision;
             if (opTransmision == 1) {
@@ -88,7 +83,7 @@ public class VehiculoService {
                 transmision = CarroSedan.TipoTransmision.AUTOMATICA;
             }
 
-            v = new CarroSedan(placa, marca, modelo, precio, estado, combustible, transmision);
+            v = new CarroSedan(placa, marca, modelo, precio, combustible, transmision);
 
         } else if (tipo == 2) {
             // --- CAMIONETA SUV ---
@@ -97,7 +92,6 @@ public class VehiculoService {
             System.out.println("1. 4X2");
             System.out.println("2. 4X4");
             int opTraccion = validador.validarOpcionMenu(sc, 1, 2);
-            sc.nextLine();
 
             CamionetaSUV.TipoTraccion traccion;
             if (opTraccion == 1) {
@@ -108,9 +102,8 @@ public class VehiculoService {
 
             System.out.print("Ingrese la capacidad del maletero (en litros): ");
             float capacidadMaletero = validador.validarDecimal(sc);
-            sc.nextLine();
 
-            v = new CamionetaSUV(placa, marca, modelo, precio, estado, traccion, capacidadMaletero);
+            v = new CamionetaSUV(placa, marca, modelo, precio, traccion, capacidadMaletero);
         } else {
             System.out.println("No está disponible ese tipo de automóvil.");
         }
@@ -129,11 +122,10 @@ public class VehiculoService {
         return "Vehículo registrado correctamente.";
     }
 
-    // Buscar un vehículo por su placa
+    // Buscar un vehículo por su placa -- Menú principal: Gestión de Vehículos
     public String buscarVehiculo(Scanner sc, Validador validador) {
         System.out.print("Ingrese la placa del vehículo: ");
         String placa = validador.validarTexto(sc, 1);
-        sc.nextLine();
 
         NodoVehiculo actual = cabeza;
 
@@ -155,6 +147,7 @@ public class VehiculoService {
         return "Vehículo con la placa " + placa + " no encontrado.";
     }
 
+    //Buscar un vehículo por su placa -- Para el contrato
     public Vehiculo buscarVehiculo(String placa) {
 
         NodoVehiculo actual = cabeza;
@@ -176,7 +169,6 @@ public class VehiculoService {
 
         System.out.print("Ingrese la placa del vehículo: ");
         String placa = validador.validarTexto(sc, 1);
-        sc.nextLine();
 
         NodoVehiculo actual = cabeza;
 
@@ -191,6 +183,124 @@ public class VehiculoService {
             actual = actual.getSiguiente();
         }
         return null;
+    }
+
+    // Modificar un vehículo por su placa
+    public String modificarVehiculo(Scanner sc) {
+
+        System.out.print("Ingrese la placa del vehículo a modificar: ");
+        String placa = sc.nextLine();
+
+        NodoVehiculo actual = cabeza;
+
+        // Buscar el vehículo en la lista
+        while (actual != null) {
+
+            Vehiculo v = actual.getDato();
+
+            if (v.getPlaca().equalsIgnoreCase(placa)) {
+
+                System.out.println("Vehículo encontrado.");
+                System.out.println("Ingrese los nuevos datos:");
+
+                System.out.print("Nueva marca: ");
+                v.setMarca(sc.nextLine());
+
+                System.out.print("Nuevo modelo (año): ");
+                int modelo = sc.nextInt();
+                sc.nextLine();
+                v.setModelo(modelo);
+
+                System.out.print("Nuevo precio diario: ");
+                float precio = sc.nextFloat();
+                sc.nextLine();
+                v.setPrecioDiario(precio);
+
+                System.out.println("Seleccione el nuevo estado:");
+                System.out.println("1. DISPONIBLE");
+                System.out.println("2. ALQUILADO");
+                int opcionEstado = sc.nextInt();
+
+                if (opcionEstado == 1) {
+                    v.setEstado(EstadoVehiculo.DISPONIBLE);
+                } else {
+                    v.setEstado(EstadoVehiculo.ALQUILADO);
+                }
+
+                // Modificar atributos específicos del vehículo
+                if (v instanceof CarroSedan) {
+
+                    CarroSedan sedan = (CarroSedan) v;
+
+                    System.out.println("Seleccione el tipo de combustible:");
+                    System.out.println("1. GASOLINA");
+                    System.out.println("2. DIESEL");
+                    System.out.println("3. ELECTRICO");
+                    int opCombustible = sc.nextInt();
+
+                    CarroSedan.Combustible combustible;
+
+                    switch (opCombustible) {
+                        case 1:
+                            combustible = CarroSedan.Combustible.GASOLINA;
+                            break;
+                        case 2:
+                            combustible = CarroSedan.Combustible.DIESEL;
+                            break;
+                        default:
+                            combustible = CarroSedan.Combustible.ELECTRICO;
+                            break;
+                    }
+
+                    sedan.setTipoCombustible(combustible);
+
+                    System.out.println("Seleccione el tipo de transmisión:");
+                    System.out.println("1. MANUAL");
+                    System.out.println("2. AUTOMATICA");
+                    int opTransmision = sc.nextInt();
+
+                    CarroSedan.TipoTransmision transmision;
+
+                    if (opTransmision == 1) {
+                        transmision = CarroSedan.TipoTransmision.MANUAL;
+                    } else {
+                        transmision = CarroSedan.TipoTransmision.AUTOMATICA;
+                    }
+
+                    sedan.setTransmision(transmision);
+
+                } else if (v instanceof CamionetaSUV) {
+
+                    CamionetaSUV suv = (CamionetaSUV) v;
+
+                    System.out.println("Seleccione el tipo de tracción:");
+                    System.out.println("1. 4X2");
+                    System.out.println("2. 4X4");
+                    int opTraccion = sc.nextInt();
+
+                    CamionetaSUV.TipoTraccion traccion;
+
+                    if (opTraccion == 1) {
+                        traccion = CamionetaSUV.TipoTraccion._4x2;
+                    } else {
+                        traccion = CamionetaSUV.TipoTraccion._4x4;
+                    }
+
+                    suv.setTraccion(traccion);
+
+                    System.out.print("Nueva capacidad del maletero (en litros): ");
+                    float capacidadMaletero = sc.nextFloat();
+
+                    suv.setCapacidadMaletero(capacidadMaletero);
+                }
+
+                return "Vehículo modificado correctamente.";
+            }
+
+            actual = actual.getSiguiente();
+        }
+
+        return "Vehículo con la placa " + placa + " no encontrado.";
     }
 
     // Eliminar un vehículo por su placa

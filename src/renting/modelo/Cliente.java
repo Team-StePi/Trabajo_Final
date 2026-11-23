@@ -1,4 +1,5 @@
 package renting.modelo;
+
 public class Cliente {
     private String Cedula;
     private String Nombre;
@@ -62,5 +63,5 @@ public class Cliente {
     public void setLicenciaConduccion(String licenciaConduccion) {
         LicenciaConduccion = licenciaConduccion;
     }
-
+    
 }

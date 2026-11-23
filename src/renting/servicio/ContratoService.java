@@ -15,8 +15,7 @@ import renting.util.Validador;
 public class ContratoService {
     Validador validador = new Validador();
 
-    private static final DateTimeFormatter FORMATO_FECHA =
-            DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     private Scanner sc = new Scanner(System.in);
     private NodoContrato cabeza;
@@ -24,15 +23,15 @@ public class ContratoService {
     private VehiculoService vehiculoService;
 
     public ContratoService(ClienteService clienteService,
-                           VehiculoService vehiculoService) {
+            VehiculoService vehiculoService) {
         this.cabeza = null;
         this.clienteService = clienteService;
         this.vehiculoService = vehiculoService;
     }
 
-    public ContratoService() {
+   /*  public ContratoService() {
         this.cabeza = null;
-    }
+    } */
 
     public String registrarContrato() {
 
@@ -100,8 +99,7 @@ public class ContratoService {
                 inicio.format(FORMATO_FECHA),
                 fin.format(FORMATO_FECHA),
                 totalDias,
-                vehiculo.getPrecioDiario()
-        );
+                vehiculo.getPrecioDiario());
 
         // Crear el nuevo nodo
         NodoContrato nuevo = new NodoContrato(nuevoContrato);
@@ -142,7 +140,7 @@ public class ContratoService {
             } catch (DateTimeParseException e) {
                 System.out.println(
                         "Error: Formato o fecha inválida. Debe usar el formato "
-                        + "DD-MM-AAAA (ejemplo: 25-10-2026).");
+                                + "DD-MM-AAAA (ejemplo: 25-10-2026).");
             }
         }
     }
@@ -173,11 +171,9 @@ public class ContratoService {
                     "Ingrese la nueva fecha de fin (DD-MM-AAAA): ");
         }
 
-        int nuevosDias =
-                (int) ChronoUnit.DAYS.between(nuevaInicio, nuevaFin);
+        int nuevosDias = (int) ChronoUnit.DAYS.between(nuevaInicio, nuevaFin);
 
-        float precioDiario =
-                contrato.getValorTotal() / contrato.getTotalDias();
+        float precioDiario = contrato.getValorTotal() / contrato.getTotalDias();
 
         contrato.setFechaInicio(nuevaInicio.format(FORMATO_FECHA));
         contrato.setFechaFin(nuevaFin.format(FORMATO_FECHA));
@@ -284,5 +280,41 @@ public class ContratoService {
 
     public NodoContrato getContratos() {
         return cabeza;
+    }
+
+    // Eliminar los contratos asociados a una cédula de cliente
+    public String eliminarContratosPorCedula(String cedula) {
+
+        int eliminados = 0;
+
+        // Caso 1: los contratos que se deben eliminar están al inicio
+        while (cabeza != null &&
+                cabeza.getDato().getCedulaCliente().equalsIgnoreCase(cedula)) {
+
+            cabeza = cabeza.getSiguiente();
+            eliminados++;
+        }
+
+        // Caso 2: los contratos están en otras posiciones
+        NodoContrato actual = cabeza;
+
+        while (actual != null && actual.getSiguiente() != null) {
+
+            if (actual.getSiguiente().getDato()
+                    .getCedulaCliente().equalsIgnoreCase(cedula)) {
+
+                actual.setSiguiente(actual.getSiguiente().getSiguiente());
+                eliminados++;
+
+            } else {
+                actual = actual.getSiguiente();
+            }
+        }
+
+        if (eliminados > 0) {
+            return "Contratos asociados eliminados correctamente.";
+        } else {
+            return "El cliente no tenía contratos registrados.";
+        }
     }
 }
