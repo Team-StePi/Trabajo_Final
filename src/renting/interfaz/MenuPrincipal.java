@@ -16,9 +16,10 @@ public class MenuPrincipal {
     private InformeService informeService;
 
     public MenuPrincipal() {
-        this.clienteService = new ClienteService();
         this.vehiculoService = new VehiculoService();
+        this.clienteService = new ClienteService(contratoService);
         this.contratoService = new ContratoService(clienteService, vehiculoService);
+        this.clienteService.setContratoService(this.contratoService);
         this.informeService = new InformeService(clienteService, vehiculoService, contratoService);
     }
 
@@ -78,11 +79,9 @@ public class MenuPrincipal {
                 case 1:
                     System.out.println(clienteService.registrarCliente(sc, validador));
                     break;
-                /**
-               * case 2:
-                *    System.out.println(clienteService.modificarCliente());
-                 *   break;
-                 */
+                case 2:
+                    System.out.println(clienteService.modificarCliente(sc));
+                    break;
                 case 3:
                     System.out.println(clienteService.eliminarCliente(sc, validador));
                     break;
@@ -115,11 +114,9 @@ public class MenuPrincipal {
                 case 1:
                     System.out.println(vehiculoService.registrarVehiculo(sc, validador));
                     break;
-                /**
-                 * case 2:
-                 *    System.out.println(vehiculoService.modificarVehiculo());
-                 *   break;
-                 */
+                case 2:
+                    System.out.println(vehiculoService.modificarVehiculo(sc));
+                    break;
                 case 3:
                     System.out.println(vehiculoService.eliminarVehiculo(sc, validador));
                     break;
@@ -174,5 +171,5 @@ public class MenuPrincipal {
     public String imprimirInforme() {
         System.out.println(informeService.imprimirInformeGeneral());
         return "Informe general impreso";
-    }
+    } 
 }
