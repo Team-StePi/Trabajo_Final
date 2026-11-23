@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 public class MenuPrincipal {
     private Scanner sc = new Scanner(System.in);
+    private Validador validador = new Validador();
     private ClienteService clienteService;
     private VehiculoService vehiculoService;
     private ContratoService contratoService;
@@ -34,7 +35,7 @@ public class MenuPrincipal {
             System.out.println("5. SALIR DEL SISTEMA");
             System.out.println("==============================================");
 
-            int opcion = Validador.validarOpcionMenu(sc, 1, 5);
+            int opcion = validador.validarOpcionMenu(sc, 1, 5);
 
             switch (opcion) {
                 case 1:
@@ -71,20 +72,22 @@ public class MenuPrincipal {
             System.out.println("4. Buscar cliente");
             System.out.println("5. Volver al menú principal");
 
-            int opcion = Validador.validarOpcionMenu(sc, 1, 5);
+            int opcion = validador.validarOpcionMenu(sc, 1, 5);
 
             switch (opcion) {
                 case 1:
-                    System.out.println(clienteService.registrarCliente());
+                    System.out.println(clienteService.registrarCliente(sc, validador));
                     break;
-                case 2:
-                    System.out.println(clienteService.modificarCliente());
-                    break;
+                /**
+               * case 2:
+                *    System.out.println(clienteService.modificarCliente());
+                 *   break;
+                 */
                 case 3:
-                    System.out.println(clienteService.eliminarCliente());
+                    System.out.println(clienteService.eliminarCliente(sc, validador));
                     break;
                 case 4:
-                    System.out.println(clienteService.buscarCliente());
+                    System.out.println(clienteService.buscarCliente(sc, validador));
                     break;
                 case 5:
                     volver = true;
@@ -106,20 +109,22 @@ public class MenuPrincipal {
             System.out.println("4. Buscar vehículo");
             System.out.println("5. Volver al menú principal");
 
-            int opcion = Validador.validarOpcionMenu(sc, 1, 5);
+            int opcion = validador.validarOpcionMenu(sc, 1, 5);
 
             switch (opcion) {
                 case 1:
-                    System.out.println(vehiculoService.registrarVehiculo());
+                    System.out.println(vehiculoService.registrarVehiculo(sc, validador));
                     break;
-                case 2:
-                    System.out.println(vehiculoService.modificarVehiculo());
-                    break;
+                /**
+                 * case 2:
+                 *    System.out.println(vehiculoService.modificarVehiculo());
+                 *   break;
+                 */
                 case 3:
-                    System.out.println(vehiculoService.eliminarVehiculo());
+                    System.out.println(vehiculoService.eliminarVehiculo(sc, validador));
                     break;
                 case 4:
-                    System.out.println(vehiculoService.buscarVehiculo());
+                    System.out.println(vehiculoService.buscarVehiculo(sc, validador));
                     break;
                 case 5:
                     volver = true;
@@ -141,7 +146,7 @@ public class MenuPrincipal {
             System.out.println("4. Buscar contrato");
             System.out.println("5. Volver al menú principal");
 
-            int opcion = Validador.validarOpcionMenu(sc, 1, 5);
+            int opcion = validador.validarOpcionMenu(sc, 1, 5);
 
             switch (opcion) {
                 case 1:

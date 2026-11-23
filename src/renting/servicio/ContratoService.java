@@ -5,6 +5,7 @@ import renting.modelo.Cliente;
 import renting.modelo.ContratoRenting;
 import renting.modelo.Vehiculo;
 import renting.estructuras.NodoContrato;
+import renting.util.Validador;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -13,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Scanner;
 
 public class ContratoService {
+    Validador validador = new Validador();
 
     private static final DateTimeFormatter FORMATO_FECHA =
             DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -36,7 +38,7 @@ public class ContratoService {
     public String registrarContrato() {
 
         System.out.print("Ingrese el ID del contrato: ");
-        String idContrato = sc.nextLine();
+        String idContrato = validador.validarTexto(sc, 1);
 
         // Verificar si el ID ya existe
         NodoContrato actual = cabeza;
@@ -53,7 +55,7 @@ public class ContratoService {
         }
 
         System.out.println("--- BÚSQUEDA Y ASIGNACIÓN DE CLIENTE ---");
-        Cliente cliente = clienteService.buscarCliente(sc);
+        Cliente cliente = clienteService.retornarCliente(sc, validador);
 
         if (cliente == null) {
             return "Error: El cliente ingresado no está registrado en el sistema.";
@@ -65,7 +67,7 @@ public class ContratoService {
         }
 
         System.out.println("--- BÚSQUEDA Y ASIGNACIÓN DE VEHÍCULO ---");
-        Vehiculo vehiculo = vehiculoService.buscarVehiculo(sc);
+        Vehiculo vehiculo = vehiculoService.retornarVehiculo(sc, validador);
 
         if (vehiculo == null) {
             return "Error: El vehículo ingresado no existe en el inventario.";
@@ -205,8 +207,8 @@ public class ContratoService {
 
         if (vehiculoService != null
                 && vehiculoService.getVehiculos() != null) {
-
-            for (Vehiculo v : vehiculoService.getVehiculos()) {
+            Vehiculo v = vehiculoService.buscarVehiculo(contrato.getPlacaVehiculo());
+            while (v != null) {
                 if (v.getPlaca().equalsIgnoreCase(
                         contrato.getPlacaVehiculo())) {
 
@@ -227,7 +229,7 @@ public class ContratoService {
     public ContratoRenting buscarContrato() {
 
         System.out.print("Ingrese el ID del contrato: ");
-        String idContrato = sc.nextLine();
+        String idContrato = validador.validarTexto(sc, 1);
 
         NodoContrato actual = cabeza;
 
@@ -248,7 +250,7 @@ public class ContratoService {
     public boolean validarDisponibilidad() {
 
         System.out.print("Ingrese la placa del vehículo: ");
-        String placa = sc.nextLine();
+        String placa = validador.validarTexto(sc, 1);
 
         NodoContrato actual = cabeza;
 
