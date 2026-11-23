@@ -1,17 +1,16 @@
 
 package renting.servicio;
 
-import renting.modelo.Cliente;
-import renting.modelo.ContratoRenting;
-import renting.modelo.Vehiculo;
-import renting.estructuras.NodoContrato;
-import renting.util.Validador;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Scanner;
+import renting.estructuras.NodoContrato;
+import renting.modelo.Cliente;
+import renting.modelo.ContratoRenting;
+import renting.modelo.Vehiculo;
+import renting.util.Validador;
 
 public class ContratoService {
     Validador validador = new Validador();
@@ -208,13 +207,8 @@ public class ContratoService {
         if (vehiculoService != null
                 && vehiculoService.getVehiculos() != null) {
             Vehiculo v = vehiculoService.buscarVehiculo(contrato.getPlacaVehiculo());
-            while (v != null) {
-                if (v.getPlaca().equalsIgnoreCase(
-                        contrato.getPlacaVehiculo())) {
-
-                    v.setEstado(Vehiculo.EstadoVehiculo.DISPONIBLE);
-                    break;
-                }
+            if (v.getPlaca().equalsIgnoreCase(contrato.getPlacaVehiculo())) {
+                v.setEstado(Vehiculo.EstadoVehiculo.DISPONIBLE);
             }
         }
 
