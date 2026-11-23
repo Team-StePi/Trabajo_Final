@@ -3,9 +3,11 @@ package renting.servicio;
 
 import renting.modelo.Cliente;
 import renting.estructuras.NodoClientes;
+import renting.util.Validador;
 import java.util.Scanner;
 
 public class ClienteService {
+    Validador validador = new Validador();
 
     private NodoClientes cabeza;
 
@@ -14,25 +16,25 @@ public class ClienteService {
     }
 
     // Registrar un cliente
-    public String registrarCliente(Scanner sc) {
+    public String registrarCliente(Scanner sc, Validador v) {
 
         System.out.print("Ingrese la cédula: ");
-        String cedula = sc.nextLine();
+        String cedula = v.validarTexto(sc, 1);
 
         System.out.print("Ingrese el nombre: ");
-        String nombre = sc.nextLine();
+        String nombre = v.validarTexto(sc, 2);
 
         System.out.print("Ingrese el apellido: ");
-        String apellido = sc.nextLine();
+        String apellido = v.validarTexto(sc, 2);
 
         System.out.print("Ingrese el teléfono: ");
-        String telefono = sc.nextLine();
+        String telefono = v.validarTexto(sc, 3);
 
         System.out.print("Ingrese la dirección: ");
-        String direccion = sc.nextLine();
+        String direccion = v.validarTexto(sc, 4);
 
         System.out.print("Ingrese la licencia de conducción: ");
-        String licencia = sc.nextLine();
+        String licencia = v.validarTexto(sc, 4);
 
         Cliente c = new Cliente(
             cedula, nombre, apellido, telefono, direccion, licencia
@@ -58,11 +60,11 @@ public class ClienteService {
         return "Cliente registrado correctamente.";
     }
 
-    // Buscar cliente por su cédula
-    public String buscarCliente(Scanner sc) {
+    // Retornar cliente por su cédula
+    public String buscarCliente(Scanner sc, Validador v) {
 
         System.out.print("Ingrese la cédula del cliente a buscar: ");
-        String cedula = sc.nextLine();
+        String cedula = v.validarTexto(sc, 3);
 
         NodoClientes actual = cabeza;
 
@@ -81,11 +83,34 @@ public class ClienteService {
         return "Cliente no encontrado.";
     }
 
+    // Retornar cliente por su cédula
+    public Cliente retornarCliente(Scanner sc, Validador v) {
+
+        System.out.print("Ingrese la cédula del cliente a buscar: ");
+        String cedula = v.validarTexto(sc, 3);
+
+        NodoClientes actual = cabeza;
+
+        while (actual != null) {
+
+            Cliente c = actual.getDato();
+
+            if (c.getCedula().equalsIgnoreCase(cedula)) {
+                return c;
+            }
+
+            actual = actual.getSiguiente();
+        }
+
+        System.out.println("Cliente con la cédula " + cedula + " no encontrado.");
+        return null;
+    }
+
     // Eliminar cliente por su cédula
-    public String eliminarCliente(Scanner sc) {
+    public String eliminarCliente(Scanner sc, Validador v) {
 
         System.out.print("Ingrese la cédula del cliente a eliminar: ");
-        String cedula = sc.nextLine();
+        String cedula = v.validarTexto(sc, 3);
 
         if (cabeza == null) {
             return "No hay clientes registrados.";

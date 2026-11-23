@@ -6,6 +6,7 @@ import renting.modelo.Vehiculo;
 import renting.modelo.Vehiculo.EstadoVehiculo;
 import renting.estructuras.NodoVehiculo;
 import java.util.Scanner;
+import renting.util.Validador;
 
 public class VehiculoService {
 
@@ -16,32 +17,32 @@ public class VehiculoService {
     }
 
     // Agregar un vehículo al final de la lista
-    public String registrarVehiculo(Scanner sc) {
+    public String registrarVehiculo(Scanner sc, Validador validador) {
 
         System.out.println("¿Qué tipo de vehículo desea registrar?");
         System.out.println("1. Carro Sedán");
         System.out.println("2. Camioneta SUV");
-        int tipo = sc.nextInt();
+        int tipo = validador.validarOpcionMenu(sc, 1, 2);
         sc.nextLine();
 
         System.out.print("Ingrese la placa: ");
-        String placa = sc.nextLine();
+        String placa = validador.validarTexto(sc, 1);
 
         System.out.print("Ingrese la marca: ");
-        String marca = sc.nextLine();
+        String marca = validador.validarTexto(sc, 2);
 
         System.out.print("Ingrese el modelo (año): ");
-        int modelo = sc.nextInt();
+        int modelo = validador.validarEntero(sc);
         sc.nextLine();
 
         System.out.print("Ingrese el precio diario: ");
-        float precio = sc.nextFloat();
+        float precio = validador.validarDecimal(sc);
         sc.nextLine();
 
         System.out.println("Seleccione el estado:");
         System.out.println("1. DISPONIBLE");
         System.out.println("2. ALQUILADO");
-        int opcionEstado = sc.nextInt();
+        int opcionEstado = validador.validarOpcionMenu(sc, 1, 2);
         sc.nextLine();
         EstadoVehiculo estado;
         if (opcionEstado == 1) {
@@ -58,7 +59,7 @@ public class VehiculoService {
             System.out.println("1. GASOLINA");
             System.out.println("2. DIESEL");
             System.out.println("3. ELECTRICO");
-            int opCombustible = sc.nextInt();
+            int opCombustible = validador.validarOpcionMenu(sc, 1, 3);
             sc.nextLine();
 
             CarroSedan.Combustible combustible;
@@ -77,7 +78,7 @@ public class VehiculoService {
             System.out.println("Seleccione el tipo de transmisión:");
             System.out.println("1. MANUAL");
             System.out.println("2. AUTOMATICA");
-            int opTransmision = sc.nextInt();
+            int opTransmision = validador.validarOpcionMenu(sc, 1, 2);
             sc.nextLine();
 
             CarroSedan.TipoTransmision transmision;
@@ -95,7 +96,7 @@ public class VehiculoService {
             System.out.println("Seleccione el tipo de tracción:");
             System.out.println("1. 4X2");
             System.out.println("2. 4X4");
-            int opTraccion = sc.nextInt();
+            int opTraccion = validador.validarOpcionMenu(sc, 1, 2);
             sc.nextLine();
 
             CamionetaSUV.TipoTraccion traccion;
@@ -106,7 +107,7 @@ public class VehiculoService {
             }
 
             System.out.print("Ingrese la capacidad del maletero (en litros): ");
-            float capacidadMaletero = sc.nextFloat();
+            float capacidadMaletero = validador.validarDecimal(sc);
             sc.nextLine();
 
             v = new CamionetaSUV(placa, marca, modelo, precio, estado, traccion, capacidadMaletero);
@@ -129,9 +130,10 @@ public class VehiculoService {
     }
 
     // Buscar un vehículo por su placa
-    public String buscarVehiculo(Scanner sc) {
+    public String buscarVehiculo(Scanner sc, Validador validador) {
         System.out.print("Ingrese la placa del vehículo: ");
-        String placa = sc.nextLine();
+        String placa = validador.validarTexto(sc, 1);
+        sc.nextLine();
 
         NodoVehiculo actual = cabeza;
 
@@ -153,11 +155,49 @@ public class VehiculoService {
         return "Vehículo con la placa " + placa + " no encontrado.";
     }
 
+    public Vehiculo buscarVehiculo(String placa) {
+
+        NodoVehiculo actual = cabeza;
+
+        while (actual != null) {
+
+            Vehiculo v = actual.getDato();
+
+            if (v.getPlaca().equalsIgnoreCase(placa)) {
+                return v;
+            }
+
+            actual = actual.getSiguiente();
+        }
+        return null;
+    }
+
+    public Vehiculo retornarVehiculo(Scanner sc, Validador validador) {
+
+        System.out.print("Ingrese la placa del vehículo: ");
+        String placa = validador.validarTexto(sc, 1);
+        sc.nextLine();
+
+        NodoVehiculo actual = cabeza;
+
+        while (actual != null) {
+
+            Vehiculo v = actual.getDato();
+
+            if (v.getPlaca().equalsIgnoreCase(placa)) {
+                return v;
+            }
+
+            actual = actual.getSiguiente();
+        }
+        return null;
+    }
+
     // Eliminar un vehículo por su placa
-    public String eliminarVehiculo(Scanner sc) {
+    public String eliminarVehiculo(Scanner sc, Validador validador) {
 
         System.out.print("Ingrese la placa del vehículo a eliminar: ");
-        String placa = sc.nextLine();
+        String placa = validador.validarTexto(sc, 1);
 
         if (cabeza == null) {
             return "No hay vehículos registrados.";
