@@ -3,7 +3,6 @@ package renting.servicio;
 import renting.modelo.CamionetaSUV;
 import renting.modelo.CarroSedan;
 import renting.modelo.Vehiculo;
-import renting.modelo.Vehiculo.EstadoVehiculo;
 import renting.estructuras.NodoVehiculo;
 import java.util.Scanner;
 import renting.util.Validador;
@@ -139,6 +138,7 @@ public class VehiculoService {
         return null;
     }
 
+    //Buscar un vehículo por su placa -- Para el menú
     public Vehiculo buscarVehiculo(Scanner sc, Validador validador) {
 
         System.out.print("Ingrese la placa del vehículo: ");
@@ -156,6 +156,7 @@ public class VehiculoService {
 
             actual = actual.getSiguiente();
         }
+        System.out.println("Vehículo con la placa " + placa + " no encontrado.");
         return null;
     }
 
@@ -188,17 +189,6 @@ public class VehiculoService {
                 float precio = validador.validarDecimal(sc);
 
                 v.setPrecioDiario(precio);
-
-                System.out.println("Seleccione el nuevo estado:");
-                System.out.println("1. DISPONIBLE");
-                System.out.println("2. ALQUILADO");
-                int opcionEstado = validador.validarOpcionMenu(sc, 1, 2);
-
-                if (opcionEstado == 1) {
-                    v.setEstado(EstadoVehiculo.DISPONIBLE);
-                } else {
-                    v.setEstado(EstadoVehiculo.ALQUILADO);
-                }
 
                 // Modificar atributos específicos del vehículo
                 if (v instanceof CarroSedan) {

@@ -41,11 +41,11 @@ public class InformeService {
     }
 
     public void imprimir(Vehiculo vehiculo) {
-        System.out.println(vehiculo == null ? "{}" : gson.toJson(vehiculo));
+        System.out.println(vehiculo == null ? "" : gson.toJson(vehiculo));
     }
 
     public void imprimir(ContratoRenting contrato) {
-        System.out.println(contrato == null ? "{}" : gson.toJson(contrato));
+        System.out.println(contrato == null ? "" : gson.toJson(contrato));
     }
 
     public String imprimirInformeGeneral() {
