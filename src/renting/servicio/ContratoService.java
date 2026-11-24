@@ -215,11 +215,11 @@ public class ContratoService {
 
             if (c.getIdContrato().equalsIgnoreCase(idContrato)) {
                 return c;
-            }
-
+            } 
             actual = actual.getSiguiente();
         }
-
+        System.out.println("No se encontró un contrato con el ID "
+            + idContrato + ". Intente de nuevo.");
         return null;
     }
 
