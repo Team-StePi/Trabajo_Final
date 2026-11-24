@@ -15,26 +15,19 @@ import renting.util.Validador;
 public class ContratoService {
     Validador validador = new Validador();
 
-    private static final DateTimeFormatter FORMATO_FECHA =
-            DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
-    private Scanner sc = new Scanner(System.in);
+    private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     private NodoContrato cabeza;
     private ClienteService clienteService;
     private VehiculoService vehiculoService;
 
     public ContratoService(ClienteService clienteService,
-                           VehiculoService vehiculoService) {
+            VehiculoService vehiculoService) {
         this.cabeza = null;
         this.clienteService = clienteService;
         this.vehiculoService = vehiculoService;
     }
 
-    public ContratoService() {
-        this.cabeza = null;
-    }
-
-    public String registrarContrato() {
+    public String registrarContrato(Scanner sc) {
 
         System.out.print("Ingrese el ID del contrato: ");
         String idContrato = validador.validarTexto(sc, 1);
@@ -54,7 +47,7 @@ public class ContratoService {
         }
 
         System.out.println("--- BÚSQUEDA Y ASIGNACIÓN DE CLIENTE ---");
-        Cliente cliente = clienteService.retornarCliente(sc, validador);
+        Cliente cliente = clienteService.buscarCliente(sc, validador);
 
         if (cliente == null) {
             return "Error: El cliente ingresado no está registrado en el sistema.";
@@ -66,7 +59,7 @@ public class ContratoService {
         }
 
         System.out.println("--- BÚSQUEDA Y ASIGNACIÓN DE VEHÍCULO ---");
-        Vehiculo vehiculo = vehiculoService.retornarVehiculo(sc, validador);
+        Vehiculo vehiculo = vehiculoService.buscarVehiculo(sc, validador);
 
         if (vehiculo == null) {
             return "Error: El vehículo ingresado no existe en el inventario.";
@@ -77,18 +70,13 @@ public class ContratoService {
                     + " ya se encuentra ALQUILADO.";
         }
 
-        LocalDate inicio = pedirFecha(
-                "Ingrese la fecha de inicio (DD-MM-AAAA): ");
-
-        LocalDate fin = pedirFecha(
-                "Ingrese la fecha de fin (DD-MM-AAAA): ");
+        LocalDate inicio = pedirFecha(sc, "Ingrese la fecha de inicio (DD-MM-AAAA): ");
+        LocalDate fin = pedirFecha(sc, "Ingrese la fecha de fin (DD-MM-AAAA): ");
 
         while (!fin.isAfter(inicio)) {
-            System.out.println(
-                    "La fecha de fin debe ser posterior a la fecha de inicio.");
+            System.out.println("La fecha de fin debe ser posterior a la fecha de inicio.");
 
-            fin = pedirFecha(
-                    "Ingrese la fecha de fin (DD-MM-AAAA): ");
+            fin = pedirFecha(sc, "Ingrese la fecha de fin (DD-MM-AAAA): ");
         }
 
         int totalDias = (int) ChronoUnit.DAYS.between(inicio, fin);
@@ -100,8 +88,7 @@ public class ContratoService {
                 inicio.format(FORMATO_FECHA),
                 fin.format(FORMATO_FECHA),
                 totalDias,
-                vehiculo.getPrecioDiario()
-        );
+                vehiculo.getPrecioDiario());
 
         // Crear el nuevo nodo
         NodoContrato nuevo = new NodoContrato(nuevoContrato);
@@ -125,7 +112,7 @@ public class ContratoService {
                 + " días). Vehículo marcado como 'ALQUILADO'.";
     }
 
-    private LocalDate pedirFecha(String mensaje) {
+    private LocalDate pedirFecha(Scanner sc, String mensaje) {
 
         while (true) {
             System.out.print(mensaje);
@@ -142,14 +129,14 @@ public class ContratoService {
             } catch (DateTimeParseException e) {
                 System.out.println(
                         "Error: Formato o fecha inválida. Debe usar el formato "
-                        + "DD-MM-AAAA (ejemplo: 25-10-2026).");
+                                + "DD-MM-AAAA (ejemplo: 25-10-2026).");
             }
         }
     }
 
-    public String modificarContrato() {
+    public String modificarContrato(Scanner sc) {
 
-        ContratoRenting contrato = buscarContrato();
+        ContratoRenting contrato = buscarContrato(sc);
 
         if (contrato == null) {
             return "Error: No se encontró el contrato solicitado.";
@@ -159,25 +146,20 @@ public class ContratoService {
             return "Error: No se puede modificar un contrato que ya fue FINALIZADO.";
         }
 
-        LocalDate nuevaInicio = pedirFecha(
-                "Ingrese la nueva fecha de inicio (DD-MM-AAAA): ");
+        LocalDate nuevaInicio = pedirFecha(sc, "Ingrese la nueva fecha de inicio (DD-MM-AAAA): ");
 
-        LocalDate nuevaFin = pedirFecha(
-                "Ingrese la nueva fecha de fin (DD-MM-AAAA): ");
+        LocalDate nuevaFin = pedirFecha(sc, "Ingrese la nueva fecha de fin (DD-MM-AAAA): ");
 
         while (!nuevaFin.isAfter(nuevaInicio)) {
             System.out.println(
                     "La fecha de fin debe ser posterior a la fecha de inicio.");
 
-            nuevaFin = pedirFecha(
-                    "Ingrese la nueva fecha de fin (DD-MM-AAAA): ");
+            nuevaFin = pedirFecha(sc, "Ingrese la nueva fecha de fin (DD-MM-AAAA): ");
         }
 
-        int nuevosDias =
-                (int) ChronoUnit.DAYS.between(nuevaInicio, nuevaFin);
+        int nuevosDias = (int) ChronoUnit.DAYS.between(nuevaInicio, nuevaFin);
 
-        float precioDiario =
-                contrato.getValorTotal() / contrato.getTotalDias();
+        float precioDiario = contrato.getValorTotal() / contrato.getTotalDias();
 
         contrato.setFechaInicio(nuevaInicio.format(FORMATO_FECHA));
         contrato.setFechaFin(nuevaFin.format(FORMATO_FECHA));
@@ -190,9 +172,9 @@ public class ContratoService {
                 + contrato.getValorTotal();
     }
 
-    public String devolverContrato() {
+    public String devolverContrato(Scanner sc) {
 
-        ContratoRenting contrato = buscarContrato();
+        ContratoRenting contrato = buscarContrato(sc);
 
         if (contrato == null) {
             return "Error: No se encontró el contrato a devolver.";
@@ -220,7 +202,7 @@ public class ContratoService {
     }
 
     // Buscar contrato por su ID
-    public ContratoRenting buscarContrato() {
+    public ContratoRenting buscarContrato(Scanner sc) {
 
         System.out.print("Ingrese el ID del contrato: ");
         String idContrato = validador.validarTexto(sc, 1);
@@ -239,28 +221,6 @@ public class ContratoService {
         }
 
         return null;
-    }
-
-    public boolean validarDisponibilidad() {
-
-        System.out.print("Ingrese la placa del vehículo: ");
-        String placa = validador.validarTexto(sc, 1);
-
-        NodoContrato actual = cabeza;
-
-        while (actual != null) {
-
-            ContratoRenting c = actual.getDato();
-
-            if (c.getPlacaVehiculo().equalsIgnoreCase(placa)
-                    && "Activo".equalsIgnoreCase(c.getEstado())) {
-                return false;
-            }
-
-            actual = actual.getSiguiente();
-        }
-
-        return true;
     }
 
     private boolean clienteTieneContratoActivo(String cedulaCliente) {
@@ -284,5 +244,41 @@ public class ContratoService {
 
     public NodoContrato getContratos() {
         return cabeza;
+    }
+
+    // Eliminar los contratos asociados a una cédula de cliente
+    public String eliminarContratosPorCedula(String cedula) {
+
+        int eliminados = 0;
+
+        // Caso 1: los contratos que se deben eliminar están al inicio
+        while (cabeza != null &&
+                cabeza.getDato().getCedulaCliente().equalsIgnoreCase(cedula)) {
+
+            cabeza = cabeza.getSiguiente();
+            eliminados++;
+        }
+
+        // Caso 2: los contratos están en otras posiciones
+        NodoContrato actual = cabeza;
+
+        while (actual != null && actual.getSiguiente() != null) {
+
+            if (actual.getSiguiente().getDato()
+                    .getCedulaCliente().equalsIgnoreCase(cedula)) {
+
+                actual.setSiguiente(actual.getSiguiente().getSiguiente());
+                eliminados++;
+
+            } else {
+                actual = actual.getSiguiente();
+            }
+        }
+
+        if (eliminados > 0) {
+            return "Contratos asociados eliminados correctamente.";
+        } else {
+            return "El cliente no tenía contratos registrados.";
+        }
     }
 }

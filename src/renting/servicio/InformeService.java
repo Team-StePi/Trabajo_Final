@@ -37,7 +37,7 @@ public class InformeService {
     }
 
     public void imprimir(Cliente cliente) {
-        System.out.println(cliente == null ? "{}" : gson.toJson(cliente));
+        System.out.println(cliente == null ? "" : gson.toJson(cliente));
     }
 
     public void imprimir(Vehiculo vehiculo) {
@@ -105,8 +105,8 @@ public class InformeService {
 
         informe.put("totalIngresos", totalIngresos);
 
-        String json = gson.toJson(informe);
-        System.out.println(json);
-        return json;
+        return gson.toJson(informe);
+
+
     }
 }

@@ -11,12 +11,12 @@ public abstract class Vehiculo {
         ALQUILADO
     }
 
-    public Vehiculo(String placa, String marca, int modelo, float precioDiario, EstadoVehiculo estado) {
+    public Vehiculo(String placa, String marca, int modelo, float precioDiario) {
         Placa = placa;
         Marca = marca;
         Modelo = modelo;
         PrecioDiario = precioDiario;
-        Estado = estado;
+        Estado = EstadoVehiculo.DISPONIBLE; // Inicialmente, el vehículo está disponible
     }
 
     public Vehiculo() {
