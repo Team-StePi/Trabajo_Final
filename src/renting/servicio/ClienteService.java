@@ -82,7 +82,7 @@ public class ClienteService {
         return "Cliente registrado correctamente.";
     }
 
-    // Retornar cliente por su cédula
+    // Retornar cliente por su cédula. Se usa en el menú para buscar un cliente y mostrar sus datos en el informe
     public Cliente buscarCliente(Scanner sc, Validador v) {
 
         System.out.print("Ingrese la cédula del cliente a buscar: ");
@@ -105,6 +105,7 @@ public class ClienteService {
         return null;
     }
 
+    //Se usa en la validación de la cédula al registrar un cliente, para evitar duplicados
     public Cliente buscarCliente(String cedula) {
 
         NodoClientes actual = cabeza;
@@ -118,9 +119,9 @@ public class ClienteService {
             }
 
             actual = actual.getSiguiente();
+            System.out.println("Cliente con la cédula " + cedula + " no encontrado.");
         }
 
-        System.out.println("Cliente con la cédula " + cedula + " no encontrado.");
         return null;
     }
 
